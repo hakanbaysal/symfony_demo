@@ -1,0 +1,9 @@
+
+<form action="{{ path("fos_user_security_check") }}" method="post" class="form-signin">  
+  <div class="fos_user_user_show">
+     <h3 class="form-signin-heading"><strong>{{ 'Username' }}:</strong> {{ user.username }}</h3>
+ 	 <hr class="colorgraph"><br>
+     <h3 class="form-signin-heading"><strong>{{ 'Email' }}:</strong> {{ user.email }}</h3>
+     <a href="{{ path("fos_user_security_logout") }}" class="btn btn-lg btn-primary btn-block" />{{ 'Logout' }}</a> 
+</div>
+</form>

@@ -1,0 +1,14 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% block fos_user_content %}
+    <form action="{{ path("fos_user_security_check") }}" method="post" class="form-signin">  
+      <h3 class="form-signin-heading">EE Login</h3>
+      <hr class="colorgraph"><br>
+      <p>{{ 'Registration Confirmed' }}</p>
+    {% if app.session is not empty %}
+        {% set targetUrl = app.session.get('_security.' ~ app.security.token.providerKey ~ '.target_path') %}
+        {% if targetUrl is not empty %}<p><a href="{{ targetUrl }}">{{ 'registration.back'|trans({}, 'FOSUserBundle') }}</a></p>{% endif %}
+    {% endif %}
+     <a href="/" class="btn btn-lg btn-primary btn-block">{{ 'Dashboard' }}</a>
+    </form>
+{% endblock fos_user_content %}

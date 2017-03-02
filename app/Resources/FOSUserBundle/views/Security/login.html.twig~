@@ -1,0 +1,37 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block fos_user_content %}
+{% if error %}
+    <div>{{ error|trans({}, 'FOSUserBundle') }}</div>
+{% endif %}
+
+<form action="{{ path("fos_user_security_check") }}" method="post" class="form-signin">  
+  <h3 class="form-signin-heading">EE Login</h3>
+  <hr class="colorgraph"><br>
+
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+  <div class="form-group">
+    <label for="username">{{ 'Username' }}</label>
+    <input type="text" class="form-control" id="username" value="hakanbaysal" name="_username" placeholder="username" required="required">
+  </div>
+  <div class="form-group">
+    <label for="password">{{ 'Password' }}</label>
+    <input type="password" class="form-control" id="password" value="123456" name="_password" placeholder="Password" required="required">
+  </div>
+  <div class="checkbox">
+    <input type="checkbox" class="checkbox-left" id="remember_me" name="_remember_me" value="on" >
+    <label for="remember_me">{{ 'Remember Me' }}</label> 
+  </div>
+  <input type="submit" class="btn btn-lg btn-primary btn-block" id="_submit" name="_submit" value="{{ 'Submit' }}" />
+  <div class="center-form">
+    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+	{{ 'Logged In as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+	<a href="{{ path('fos_user_security_logout') }}">{{ 'Logout' }}</a>
+    {% else %}
+	<a href="{{ path('fos_user_registration_register') }}">{{ 'Register' }}</a>
+    {% endif %}
+   </div>
+</form>
+{% endblock fos_user_content %}
