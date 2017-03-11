@@ -1,0 +1,17 @@
+{% extends '::blog.html.twig' %}
+
+{% block body -%}
+
+<div class="container">
+    <h1>Post creation</h1>
+
+    {{ form(form, { 'attr': {'class': 'form-inline'}}) }}
+
+        <br />
+        <a href="{{ path('post') }}" class="btn btn-primary">
+            Back to the list
+        </a>
+
+<br /><br />
+</div>
+{% endblock %}

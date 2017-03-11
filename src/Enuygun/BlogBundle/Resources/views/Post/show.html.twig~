@@ -1,0 +1,41 @@
+{% extends '::blog.html.twig' %}
+
+{% block body -%}
+<div class="container">
+    <h1>{{ entity.title }}</h1>
+
+    <table class="table table-hover">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ entity.title }}</td>
+            </tr>
+            <tr>
+                <th>Body</th>
+                <td>{{ entity.body }}</td>
+            </tr>
+            <tr>
+                <th>Publishedat</th>
+                <td>{{ entity.publishedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+<a href="{{ path('post_edit', { 'id': entity.id }) }}" class="btn btn-success">
+            Edit
+        </a>
+
+   {{ form(delete_form, { 'attr': {'class': 'enuygun-left'}}) }}
+
+       
+        <a href="{{ path('post') }}" class="btn btn-primary">
+            Back to the list
+        </a>
+
+<br /><br />
+</div>
+{% endblock %}

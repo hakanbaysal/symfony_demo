@@ -693,26 +693,30 @@ class appDevDebugProjectContainer extends Container
         $a = new \Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver(array(($this->targetDirs[3].'/vendor/friendsofsymfony/user-bundle/FOS/UserBundle/Resources/config/doctrine') => 'FOS\\UserBundle\\Entity'));
         $a->setGlobalBasename('mapping');
 
-        $b = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
-        $b->addDriver(new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($this->get('annotation_reader'), array(0 => ($this->targetDirs[3].'/src/AppBundle/Entity'))), 'AppBundle\\Entity');
-        $b->addDriver($a, 'FOS\\UserBundle\\Entity');
+        $b = new \Doctrine\ORM\Mapping\Driver\SimplifiedYamlDriver(array(($this->targetDirs[3].'/src/Enuygun/BlogBundle/Resources/config/doctrine') => 'Enuygun\\BlogBundle\\Entity'));
+        $b->setGlobalBasename('mapping');
 
-        $c = new \Doctrine\ORM\Configuration();
-        $c->setEntityNamespaces(array('AppBundle' => 'AppBundle\\Entity', 'FOSUserBundle' => 'FOS\\UserBundle\\Entity'));
-        $c->setMetadataCacheImpl($this->get('doctrine_cache.providers.doctrine.orm.default_metadata_cache'));
-        $c->setQueryCacheImpl($this->get('doctrine_cache.providers.doctrine.orm.default_query_cache'));
-        $c->setResultCacheImpl($this->get('doctrine_cache.providers.doctrine.orm.default_result_cache'));
-        $c->setMetadataDriverImpl($b);
-        $c->setProxyDir((__DIR__.'/doctrine/orm/Proxies'));
-        $c->setProxyNamespace('Proxies');
-        $c->setAutoGenerateProxyClasses(true);
-        $c->setClassMetadataFactoryName('Doctrine\\ORM\\Mapping\\ClassMetadataFactory');
-        $c->setDefaultRepositoryClassName('Doctrine\\ORM\\EntityRepository');
-        $c->setNamingStrategy(new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy());
-        $c->setQuoteStrategy(new \Doctrine\ORM\Mapping\DefaultQuoteStrategy());
-        $c->setEntityListenerResolver($this->get('doctrine.orm.default_entity_listener_resolver'));
+        $c = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
+        $c->addDriver(new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($this->get('annotation_reader'), array(0 => ($this->targetDirs[3].'/src/AppBundle/Entity'))), 'AppBundle\\Entity');
+        $c->addDriver($a, 'FOS\\UserBundle\\Entity');
+        $c->addDriver($b, 'Enuygun\\BlogBundle\\Entity');
 
-        $this->services['doctrine.orm.default_entity_manager'] = $instance = \Doctrine\ORM\EntityManager::create($this->get('doctrine.dbal.default_connection'), $c);
+        $d = new \Doctrine\ORM\Configuration();
+        $d->setEntityNamespaces(array('AppBundle' => 'AppBundle\\Entity', 'FOSUserBundle' => 'FOS\\UserBundle\\Entity', 'EnuygunBlogBundle' => 'Enuygun\\BlogBundle\\Entity'));
+        $d->setMetadataCacheImpl($this->get('doctrine_cache.providers.doctrine.orm.default_metadata_cache'));
+        $d->setQueryCacheImpl($this->get('doctrine_cache.providers.doctrine.orm.default_query_cache'));
+        $d->setResultCacheImpl($this->get('doctrine_cache.providers.doctrine.orm.default_result_cache'));
+        $d->setMetadataDriverImpl($c);
+        $d->setProxyDir((__DIR__.'/doctrine/orm/Proxies'));
+        $d->setProxyNamespace('Proxies');
+        $d->setAutoGenerateProxyClasses(true);
+        $d->setClassMetadataFactoryName('Doctrine\\ORM\\Mapping\\ClassMetadataFactory');
+        $d->setDefaultRepositoryClassName('Doctrine\\ORM\\EntityRepository');
+        $d->setNamingStrategy(new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy());
+        $d->setQuoteStrategy(new \Doctrine\ORM\Mapping\DefaultQuoteStrategy());
+        $d->setEntityListenerResolver($this->get('doctrine.orm.default_entity_listener_resolver'));
+
+        $this->services['doctrine.orm.default_entity_manager'] = $instance = \Doctrine\ORM\EntityManager::create($this->get('doctrine.dbal.default_connection'), $d);
 
         $this->get('doctrine.orm.default_manager_configurator')->configure($instance);
 
@@ -2387,27 +2391,30 @@ class appDevDebugProjectContainer extends Container
         $e = $this->get('http_kernel');
         $f = $this->get('security.authentication.manager');
 
-        $g = new \Symfony\Component\HttpFoundation\RequestMatcher('^/login$');
+        $g = new \Symfony\Component\HttpFoundation\RequestMatcher('^/post/');
 
-        $h = new \Symfony\Component\HttpFoundation\RequestMatcher('^/register');
+        $h = new \Symfony\Component\HttpFoundation\RequestMatcher('^/login$');
 
-        $i = new \Symfony\Component\Security\Http\AccessMap();
-        $i->add($g, array(0 => 'IS_AUTHENTICATED_ANONYMOUSLY'), NULL);
-        $i->add($h, array(0 => 'IS_AUTHENTICATED_ANONYMOUSLY'), NULL);
+        $i = new \Symfony\Component\HttpFoundation\RequestMatcher('^/register');
 
-        $j = new \Symfony\Component\Security\Http\HttpUtils($d, $d);
+        $j = new \Symfony\Component\Security\Http\AccessMap();
+        $j->add($g, array(0 => 'IS_AUTHENTICATED_FULLY'), NULL);
+        $j->add($h, array(0 => 'IS_AUTHENTICATED_ANONYMOUSLY'), NULL);
+        $j->add($i, array(0 => 'IS_AUTHENTICATED_ANONYMOUSLY'), NULL);
 
-        $k = new \Symfony\Component\Security\Http\Firewall\LogoutListener($b, $j, new \Symfony\Component\Security\Http\Logout\DefaultLogoutSuccessHandler($j, '/'), array('csrf_parameter' => '_csrf_token', 'intention' => 'logout', 'logout_path' => '/logout'));
-        $k->addHandler(new \Symfony\Component\Security\Http\Logout\SessionLogoutHandler());
+        $k = new \Symfony\Component\Security\Http\HttpUtils($d, $d);
 
-        $l = new \Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessHandler($j, array());
-        $l->setOptions(array('always_use_default_target_path' => false, 'default_target_path' => '/', 'login_path' => '/login', 'target_path_parameter' => '_target_path', 'use_referer' => false));
-        $l->setProviderKey('main');
+        $l = new \Symfony\Component\Security\Http\Firewall\LogoutListener($b, $k, new \Symfony\Component\Security\Http\Logout\DefaultLogoutSuccessHandler($k, '/'), array('csrf_parameter' => '_csrf_token', 'intention' => 'logout', 'logout_path' => '/logout'));
+        $l->addHandler(new \Symfony\Component\Security\Http\Logout\SessionLogoutHandler());
 
-        $m = new \Symfony\Component\Security\Http\Authentication\DefaultAuthenticationFailureHandler($e, $j, array(), $a);
-        $m->setOptions(array('login_path' => '/login', 'failure_path' => NULL, 'failure_forward' => false, 'failure_path_parameter' => '_failure_path'));
+        $m = new \Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessHandler($k, array());
+        $m->setOptions(array('always_use_default_target_path' => false, 'default_target_path' => '/', 'login_path' => '/login', 'target_path_parameter' => '_target_path', 'use_referer' => false));
+        $m->setProviderKey('main');
 
-        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($i, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => $this->get('fos_user.user_provider.username')), 'main', $a, $c), 2 => $k, 3 => new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($b, $f, $this->get('security.authentication.session_strategy'), $j, 'main', $l, $m, array('check_path' => '/login_check', 'use_forward' => false, 'require_previous_session' => true, 'username_parameter' => '_username', 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'intention' => 'authenticate', 'post_only' => true), $a, $c, $this->get('security.csrf.token_manager')), 4 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '58b818b60f8d55.58501082', $a, $f), 5 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $i, $f)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), $j, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $j, '/login', false), NULL, NULL, $a, false));
+        $n = new \Symfony\Component\Security\Http\Authentication\DefaultAuthenticationFailureHandler($e, $k, array(), $a);
+        $n->setOptions(array('login_path' => '/login', 'failure_path' => NULL, 'failure_forward' => false, 'failure_path_parameter' => '_failure_path'));
+
+        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($j, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => $this->get('fos_user.user_provider.username')), 'main', $a, $c), 2 => $l, 3 => new \Symfony\Component\Security\Http\Firewall\UsernamePasswordFormAuthenticationListener($b, $f, $this->get('security.authentication.session_strategy'), $k, 'main', $m, $n, array('check_path' => '/login_check', 'use_forward' => false, 'require_previous_session' => true, 'username_parameter' => '_username', 'password_parameter' => '_password', 'csrf_parameter' => '_csrf_token', 'intention' => 'authenticate', 'post_only' => true), $a, $c, $this->get('security.csrf.token_manager')), 4 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '58c3b53463e1a5.62173120', $a, $f), 5 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $j, $f)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), $k, 'main', new \Symfony\Component\Security\Http\EntryPoint\FormAuthenticationEntryPoint($e, $k, '/login', false), NULL, NULL, $a, false));
     }
 
     /**
@@ -3457,6 +3464,7 @@ class appDevDebugProjectContainer extends Container
         $instance->addPath(($this->targetDirs[3].'/vendor/doctrine/doctrine-bundle/Resources/views'), 'Doctrine');
         $instance->addPath(($this->targetDirs[2].'/Resources/FOSUserBundle/views'), 'FOSUser');
         $instance->addPath(($this->targetDirs[3].'/vendor/friendsofsymfony/user-bundle/FOS/UserBundle/Resources/views'), 'FOSUser');
+        $instance->addPath(($this->targetDirs[3].'/src/Enuygun/BlogBundle/Resources/views'), 'EnuygunBlog');
         $instance->addPath(($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/DebugBundle/Resources/views'), 'Debug');
         $instance->addPath(($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/WebProfilerBundle/Resources/views'), 'WebProfiler');
         $instance->addPath(($this->targetDirs[3].'/vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/views'), 'SensioDistribution');
@@ -3821,7 +3829,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getSecurity_Authentication_ManagerService()
     {
-        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('fos_user.user_provider.username'), $this->get('security.user_checker'), 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('58b818b60f8d55.58501082')), true);
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider($this->get('fos_user.user_provider.username'), $this->get('security.user_checker'), 'main', $this->get('security.encoder_factory'), true), 1 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('58c3b53463e1a5.62173120')), true);
 
         $instance->setEventDispatcher($this->get('debug.event_dispatcher'));
 
@@ -4054,6 +4062,7 @@ class appDevDebugProjectContainer extends Container
                 'SensioFrameworkExtraBundle' => 'Sensio\\Bundle\\FrameworkExtraBundle\\SensioFrameworkExtraBundle',
                 'AppBundle' => 'AppBundle\\AppBundle',
                 'FOSUserBundle' => 'FOS\\UserBundle\\FOSUserBundle',
+                'EnuygunBlogBundle' => 'Enuygun\\BlogBundle\\EnuygunBlogBundle',
                 'DebugBundle' => 'Symfony\\Bundle\\DebugBundle\\DebugBundle',
                 'WebProfilerBundle' => 'Symfony\\Bundle\\WebProfilerBundle\\WebProfilerBundle',
                 'SensioDistributionBundle' => 'Sensio\\Bundle\\DistributionBundle\\SensioDistributionBundle',
@@ -4109,6 +4118,11 @@ class appDevDebugProjectContainer extends Container
                     'parent' => NULL,
                     'path' => ($this->targetDirs[3].'/vendor/friendsofsymfony/user-bundle/FOS/UserBundle'),
                     'namespace' => 'FOS\\UserBundle',
+                ),
+                'EnuygunBlogBundle' => array(
+                    'parent' => NULL,
+                    'path' => ($this->targetDirs[3].'/src/Enuygun/BlogBundle'),
+                    'namespace' => 'Enuygun\\BlogBundle',
                 ),
                 'DebugBundle' => array(
                     'parent' => NULL,

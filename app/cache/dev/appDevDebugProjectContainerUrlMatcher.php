@@ -127,6 +127,71 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
         }
 
+        if (0 === strpos($pathinfo, '/post')) {
+            // post
+            if (rtrim($pathinfo, '/') === '/post') {
+                if (substr($pathinfo, -1) !== '/') {
+                    return $this->redirect($pathinfo.'/', 'post');
+                }
+
+                return array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\PostController::indexAction',  '_route' => 'post',);
+            }
+
+            // post_show
+            if (preg_match('#^/post/(?P<id>[^/]++)/show$#s', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'post_show')), array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\PostController::showAction',));
+            }
+
+            // post_new
+            if ($pathinfo === '/post/new') {
+                return array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\PostController::newAction',  '_route' => 'post_new',);
+            }
+
+            // post_create
+            if ($pathinfo === '/post/create') {
+                if ($this->context->getMethod() != 'POST') {
+                    $allow[] = 'POST';
+                    goto not_post_create;
+                }
+
+                return array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\PostController::createAction',  '_route' => 'post_create',);
+            }
+            not_post_create:
+
+            // post_edit
+            if (preg_match('#^/post/(?P<id>[^/]++)/edit$#s', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'post_edit')), array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\PostController::editAction',));
+            }
+
+            // post_update
+            if (preg_match('#^/post/(?P<id>[^/]++)/update$#s', $pathinfo, $matches)) {
+                if (!in_array($this->context->getMethod(), array('POST', 'PUT'))) {
+                    $allow = array_merge($allow, array('POST', 'PUT'));
+                    goto not_post_update;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'post_update')), array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\PostController::updateAction',));
+            }
+            not_post_update:
+
+            // post_delete
+            if (preg_match('#^/post/(?P<id>[^/]++)/delete$#s', $pathinfo, $matches)) {
+                if (!in_array($this->context->getMethod(), array('POST', 'DELETE'))) {
+                    $allow = array_merge($allow, array('POST', 'DELETE'));
+                    goto not_post_delete;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'post_delete')), array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\PostController::deleteAction',));
+            }
+            not_post_delete:
+
+        }
+
+        // enuygun_blog_homepage
+        if (0 === strpos($pathinfo, '/hello') && preg_match('#^/hello/(?P<name>[^/]++)$#s', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'enuygun_blog_homepage')), array (  '_controller' => 'Enuygun\\BlogBundle\\Controller\\DefaultController::indexAction',));
+        }
+
         // homepage
         if (rtrim($pathinfo, '/') === '') {
             if (substr($pathinfo, -1) !== '/') {

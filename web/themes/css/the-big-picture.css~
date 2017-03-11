@@ -14,9 +14,19 @@ h1{
 	color: white;
 }
 
+h2{
+	color: #020014;
+}
+
+a{
+	color: #020014;
+}
+
 p{
 	color: white;
 }
+
+
 
 .full {
   background: url("../img/background.jpg") no-repeat center center fixed; 
@@ -25,3 +35,4 @@ p{
   -o-background-size: cover;
   background-size: cover;
 }
+

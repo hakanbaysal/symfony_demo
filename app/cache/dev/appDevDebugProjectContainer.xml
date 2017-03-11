@@ -18,6 +18,7 @@
       <parameter key="SensioFrameworkExtraBundle">Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle</parameter>
       <parameter key="AppBundle">AppBundle\AppBundle</parameter>
       <parameter key="FOSUserBundle">FOS\UserBundle\FOSUserBundle</parameter>
+      <parameter key="EnuygunBlogBundle">Enuygun\BlogBundle\EnuygunBlogBundle</parameter>
       <parameter key="DebugBundle">Symfony\Bundle\DebugBundle\DebugBundle</parameter>
       <parameter key="WebProfilerBundle">Symfony\Bundle\WebProfilerBundle\WebProfilerBundle</parameter>
       <parameter key="SensioDistributionBundle">Sensio\Bundle\DistributionBundle\SensioDistributionBundle</parameter>
@@ -73,6 +74,11 @@
         <parameter key="parent">null</parameter>
         <parameter key="path">/var/www/blog/vendor/friendsofsymfony/user-bundle/FOS/UserBundle</parameter>
         <parameter key="namespace">FOS\UserBundle</parameter>
+      </parameter>
+      <parameter key="EnuygunBlogBundle" type="collection">
+        <parameter key="parent">null</parameter>
+        <parameter key="path">/var/www/blog/src/Enuygun/BlogBundle</parameter>
+        <parameter key="namespace">Enuygun\BlogBundle</parameter>
       </parameter>
       <parameter key="DebugBundle" type="collection">
         <parameter key="parent">null</parameter>
@@ -1869,7 +1875,7 @@
         </argument>
         <argument type="service">
           <service class="Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider" public="false">
-            <argument>58b818b60f8d55.58501082</argument>
+            <argument>58c3b53463e1a5.62173120</argument>
           </service>
         </argument>
       </argument>
@@ -1979,6 +1985,17 @@
             <tag name="monolog.logger" channel="security"/>
             <argument type="service">
               <service class="Symfony\Component\Security\Http\AccessMap" public="false">
+                <call method="add">
+                  <argument type="service">
+                    <service class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
+                      <argument>^/post/</argument>
+                    </service>
+                  </argument>
+                  <argument type="collection">
+                    <argument>IS_AUTHENTICATED_FULLY</argument>
+                  </argument>
+                  <argument>null</argument>
+                </call>
                 <call method="add">
                   <argument type="service">
                     <service class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
@@ -2130,7 +2147,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.token_storage"/>
-            <argument>58b818b60f8d55.58501082</argument>
+            <argument>58c3b53463e1a5.62173120</argument>
             <argument type="service" id="monolog.logger.security" on-invalid="null"/>
             <argument type="service" id="security.authentication.manager"/>
           </service>
@@ -2142,6 +2159,17 @@
             <argument type="service" id="security.access.decision_manager"/>
             <argument type="service">
               <service class="Symfony\Component\Security\Http\AccessMap" public="false">
+                <call method="add">
+                  <argument type="service">
+                    <service class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
+                      <argument>^/post/</argument>
+                    </service>
+                  </argument>
+                  <argument type="collection">
+                    <argument>IS_AUTHENTICATED_FULLY</argument>
+                  </argument>
+                  <argument>null</argument>
+                </call>
                 <call method="add">
                   <argument type="service">
                     <service class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
@@ -2677,6 +2705,7 @@
             <argument type="collection">
               <argument key="AppBundle">AppBundle\Entity</argument>
               <argument key="FOSUserBundle">FOS\UserBundle\Entity</argument>
+              <argument key="EnuygunBlogBundle">Enuygun\BlogBundle\Entity</argument>
             </argument>
           </call>
           <call method="setMetadataCacheImpl">
@@ -2714,6 +2743,19 @@
                     </service>
                   </argument>
                   <argument>FOS\UserBundle\Entity</argument>
+                </call>
+                <call method="addDriver">
+                  <argument type="service">
+                    <service class="Doctrine\ORM\Mapping\Driver\SimplifiedYamlDriver" public="false">
+                      <argument type="collection">
+                        <argument key="/var/www/blog/src/Enuygun/BlogBundle/Resources/config/doctrine">Enuygun\BlogBundle\Entity</argument>
+                      </argument>
+                      <call method="setGlobalBasename">
+                        <argument>mapping</argument>
+                      </call>
+                    </service>
+                  </argument>
+                  <argument>Enuygun\BlogBundle\Entity</argument>
                 </call>
               </service>
             </argument>
@@ -3353,6 +3395,10 @@
       <call method="addPath">
         <argument>/var/www/blog/vendor/friendsofsymfony/user-bundle/FOS/UserBundle/Resources/views</argument>
         <argument>FOSUser</argument>
+      </call>
+      <call method="addPath">
+        <argument>/var/www/blog/src/Enuygun/BlogBundle/Resources/views</argument>
+        <argument>EnuygunBlog</argument>
       </call>
       <call method="addPath">
         <argument>/var/www/blog/vendor/symfony/symfony/src/Symfony/Bundle/DebugBundle/Resources/views</argument>

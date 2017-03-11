@@ -1,0 +1,7 @@
+enuygun_blog_post:
+    resource: "@EnuygunBlogBundle/Resources/config/routing/post.yml"
+    prefix:   /post
+
+enuygun_blog_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: EnuygunBlogBundle:Default:index }
